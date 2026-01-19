@@ -5,150 +5,187 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>I HAVE A GIFT FOR YOU!</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
 <style>
 html, body {
-  margin: 0; padding: 0;
-  width: 100%; height: 100%;
+  margin: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  font-family: 'Courier New', monospace;
-  background: radial-gradient(circle at center, #1a001a 0%, #330033 50%, #000000 100%);
-  display: flex; justify-content: center; align-items: center;
-  position: relative;
+  background: radial-gradient(circle at center, #1a001a 0%, #330033 50%, #000 100%);
 }
+
+/* ===== TEXT ===== */
 .led-scroller {
-  display: flex; white-space: nowrap;
-  position: absolute; z-index: 3;
-  color: #ff69b4; font-size: 2.2vw;
-  text-shadow: 0 0 5px #ff69b4, 0 0 10px #ff69b4, 0 0 20px #ff69b4, 0 0 40px #ff69b4;
+  position: absolute;
+  z-index: 3;
+  white-space: nowrap;
   font-family: 'Pacifico', cursive;
-  transition: left 2s ease, top 2s ease;
+  color: #ff69b4;
+  text-shadow: 0 0 8px #ff69b4, 0 0 20px #ff69b4;
+  opacity: 0;
+  transition: opacity 2.5s ease;
 }
-.heart-center { animation: pulse 2s infinite alternate; }
-@keyframes pulse {
-  0% { text-shadow:0 0 5px #ff69b4,0 0 10px #ff69b4,0 0 20px #ff69b4,0 0 40px #ff69b4; }
-  100% { text-shadow:0 0 15px #ff69b4,0 0 25px #ffb6c1,0 0 35px #ff1493,0 0 50px #ff69b4; }
+
+@media (max-width: 600px) { .led-scroller { font-size: 16px; } }
+@media (min-width: 601px) { .led-scroller { font-size: 22px; } }
+
+/* ===== STARS ===== */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
-.led-scroller span { margin: 0 0.2em; animation: flicker 1.5s infinite, colorCycle 3s infinite alternate; }
-@keyframes flicker { 0%,19%,21%,23%,25%,54%,56%,100% { opacity:1; } 20%,22%,24%,55%{opacity:0.3;} }
-@keyframes colorCycle { 0%{color:#ff69b4;}33%{color:#ffb6c1;}66%{color:#ff1493;}100%{color:#ff69b4;} }
-.stars { position:absolute;width:100%;height:100%;z-index:1; filter:drop-shadow(0 0 10px #ff69b4) drop-shadow(0 0 20px #ffb6c1); will-change: transform;}
-.star { position:absolute;width:4px;height:4px;background:#ff69b4;border-radius:50%;opacity:0.8;box-shadow:0 0 5px #ff69b4,0 0 10px #ff69b4,0 0 15px #ff69b4; will-change: transform;}
-#clickBtn { 
-  position:absolute; z-index:4; padding:4px 10px; font-size:0.7rem; font-family:'Pacifico', cursive;
-  background:#ff69b4; color:white; border:none; border-radius:8px; 
-  box-shadow:0 0 8px #ff69b4,0 0 15px #ffb6c1; cursor:pointer; opacity:0; 
-  transition: opacity 3s, transform 1s; /* slower fade-in */
+
+.star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+/* ===== BUTTON ===== */
+#clickBtn {
+  position: absolute;
+  z-index: 4;
+  font-size: 0.9rem; /* slightly smaller */
+  font-family: 'Pacifico', cursive;
+  background: transparent;
+  color: #ff69b4;
+  text-shadow: 0 0 6px #ff69b4, 0 0 12px #ff1493, 0 0 18px #ffb6c1;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+#clickBtn:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+  text-shadow: 0 0 10px #ff69b4, 0 0 18px #ff1493, 0 0 25px #ffb6c1;
 }
 </style>
 </head>
+
 <body>
 
-<div class="led-scroller" id="ledText">
-  <span>I</span><span> </span>
-  <span>H</span><span>A</span><span>V</span><span>E</span><span> </span>
-  <span>A</span><span> </span>
-  <span>G</span><span>I</span><span>F</span><span>T</span><span> </span>
-  <span>F</span><span>O</span><span>R</span><span> </span>
-  <span>Y</span><span>O</span><span>U</span><span>!</span>
-</div>
-
+<div class="led-scroller" id="ledText"></div>
 <div class="stars"></div>
-<button id="clickBtn">Click Me</button>
+<button id="clickBtn">Click Me!</button>
 
 <script>
-// ========== Stars Setup ==========
+// ===== STARS SETUP =====
 const starsContainer = document.querySelector('.stars');
-const starCount = 150;
-let stars = [];
-for(let i=0;i<starCount;i++){
+const starCount = 160;
+const stars = [];
+
+// pink shades for heart
+const pinkShades = ['#ff69b4', '#ff1493', '#ffb6c1', '#ff85c1', '#ff4da6'];
+
+for (let i = 0; i < starCount; i++) {
   const star = document.createElement('div');
-  star.classList.add('star');
+  star.className = 'star';
   starsContainer.appendChild(star);
+
+  const color = pinkShades[Math.floor(Math.random() * pinkShades.length)];
+  star.style.background = color;
+  star.style.boxShadow = `0 0 6px ${color}, 0 0 12px ${color}, 0 0 18px ${color}`;
+
   stars.push({
-    element: star, 
-    x: Math.random()*window.innerWidth, 
-    y: Math.random()*window.innerHeight, 
-    t: i/starCount*Math.PI*2, 
+    el: star,
+    x: innerWidth / 2,
+    y: innerHeight / 2,
+    t: (i / starCount) * Math.PI * 2,
     speed: 0.05
   });
 }
 
-// ========== Heart Path ==========
-function heartPath(t, scale){
-  const x = 16*Math.pow(Math.sin(t),3);
-  const y = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
-  return {x:x*scale, y:-y*scale};
+// ===== HEART PATH =====
+function heartPath(t, scale) {
+  return {
+    x: 16 * Math.pow(Math.sin(t), 3) * scale,
+    y: -(13 * Math.cos(t)
+      - 5 * Math.cos(2 * t)
+      - 2 * Math.cos(3 * t)
+      - Math.cos(4 * t)) * scale
+  };
 }
 
-// ========== Animate Stars ==========
 let formHeart = false;
-function animateStars(){
-  const cx = window.innerWidth/2;
-  const cy = window.innerHeight/2;
-  const scale = window.innerWidth<600?9:30;
+let pulse = 0;
 
-  stars.forEach((s,i)=>{
-    if(formHeart){
-      const target = heartPath(s.t, scale);
-      s.x += (cx+target.x - s.x)*s.speed;
-      s.y += (cy+target.y - s.y)*s.speed;
-      s.t += 0.01 + i*0.0001;
+// ===== ANIMATION =====
+function animateStars() {
+  const cx = innerWidth / 2;
+  const cy = innerHeight / 2;
+  const baseScale = innerWidth < 600 ? 8 : 18;
+  const pulseScale = formHeart ? baseScale + Math.sin(pulse) * 0.6 : baseScale;
+
+  stars.forEach((s, i) => {
+    if (formHeart) {
+      const target = heartPath(s.t, pulseScale);
+      s.x += (cx + target.x - s.x) * s.speed;
+      s.y += (cy + target.y - s.y) * s.speed;
+
+      // flowing leader motion
+      s.t += 0.01 + i * 0.0001;
+      s.el.style.opacity = 1;
     }
-    s.element.style.transform = `translate(${s.x}px,${s.y}px)`;
+    s.el.style.transform = `translate(${s.x}px, ${s.y}px)`;
   });
+
+  if (formHeart) pulse += 0.02;
   requestAnimationFrame(animateStars);
 }
 animateStars();
 
-// ========== Text Scroll ==========
+// ===== TEXT SEQUENCE =====
 const ledText = document.getElementById('ledText');
-let posX = window.innerWidth;
-function animateScroll(){
-  posX -= 3;
-  ledText.style.left = posX+'px';
-  ledText.style.top = '50%';
-  ledText.style.transform = 'translateY(-50%)';
-  if(posX < window.innerWidth/2 - ledText.offsetWidth/2){ // Stop smoothly at center
-    posX = window.innerWidth/2 - ledText.offsetWidth/2;
-    moveTextToCenter();
-    return;
-  }
-  requestAnimationFrame(animateScroll);
-}
-animateScroll();
+ledText.style.left = '50%';
+ledText.style.top = '50%';
+ledText.style.transform = 'translate(-50%, -50%)';
 
-// ========== Move Text Center ==========
-function moveTextToCenter(){
-  const textWidth = ledText.offsetWidth;
-  const textHeight = ledText.offsetHeight;
-  const centerX = window.innerWidth/2 - textWidth/2;
-  const centerY = window.innerHeight/2 - textHeight/2;
-  ledText.style.left = centerX+'px';
-  ledText.style.top = centerY+'px';
-  ledText.classList.add('heart-center');
+// 1️⃣ HIII BABYYY
+setTimeout(() => {
+  ledText.textContent = 'HIII BABYYY';
+  ledText.style.opacity = 1;
+}, 1200);
 
-  // Start forming heart and fade in button after 5s
-  setTimeout(()=>{
-    formHeart = true;
-    const btn = document.getElementById('clickBtn');
-    btn.style.left = centerX + textWidth/2 - btn.offsetWidth/2 + 'px';
-    btn.style.top = centerY + textHeight + 10 + 'px';
-    btn.style.opacity = 1; // slow fade-in
-  }, 5000);
-}
+setTimeout(() => { ledText.style.opacity = 0; }, 4200);
 
-// ========== Responsive Font ==========
-function updateFont(){
-  const fontSize = Math.min(Math.max(window.innerWidth*0.025,10),20);
-  ledText.style.fontSize = fontSize+'px';
-}
-updateFont();
-window.addEventListener('resize', updateFont);
+// 2️⃣ I MISS YOU SO MUCH!
+setTimeout(() => {
+  ledText.textContent = 'I MISS YOU SO MUCH!';
+  ledText.style.opacity = 1;
+}, 5600);
 
-// ========== Click Me Button ==========
-document.getElementById('clickBtn').addEventListener('click', ()=>{
+setTimeout(() => { ledText.style.opacity = 0; }, 9000);
+
+// 3️⃣ I HAVE A GIFT FOR YOU!
+setTimeout(() => {
+  ledText.textContent = 'I HAVE A GIFT FOR YOU!';
+  ledText.style.opacity = 1;
+}, 10400);
+
+setTimeout(() => { ledText.style.opacity = 0; }, 14500);
+
+// ===== FORM HEART =====
+setTimeout(() => { formHeart = true; }, 16000);
+
+// ===== SHOW BUTTON =====
+setTimeout(() => {
+  const btn = document.getElementById('clickBtn');
+  btn.style.left = innerWidth / 2 + 'px';
+  btn.style.top = innerHeight / 2 + 'px';
+  btn.style.opacity = 1;
+}, 19500);
+
+// ===== BUTTON CLICK =====
+document.getElementById('clickBtn').onclick = () => {
   window.open('https://xoxocinx.github.io/SUPRISE/', '_blank');
-});
+};
 </script>
+
 </body>
 </html>
